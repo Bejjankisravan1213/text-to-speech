@@ -1,24 +1,40 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const speakBtn = document.getElementById("speakBtn");
-    const textInput = document.getElementById("textInput");
+let synth = window.speechSynthesis;
+let utterance;
 
-    speakBtn.addEventListener("click", () => {
-        const text = textInput.value.trim();
+// Play speech
+document.getElementById("playBtn").addEventListener("click", () => {
+    let text = document.getElementById("textInput").value;
+    if (text.trim() === "") {
+        alert("Please enter some text!");
+        return;
+    }
 
-        if (!text) {
-            alert("Please enter some text!");
-            return;
-        }
+    // If already speaking, stop and restart
+    if (synth.speaking) {
+        synth.cancel();
+    }
 
-        // Stop any previous speech before starting
-        window.speechSynthesis.cancel();
+    utterance = new SpeechSynthesisUtterance(text);
+    synth.speak(utterance);
+});
 
-        const speech = new SpeechSynthesisUtterance(text);
-        speech.lang = "en-US"; // Change: "hi-IN", "te-IN", etc. for Indian languages
-        speech.pitch = 1; // 0 (low) - 2 (high)
-        speech.rate = 1; // 0.1 (slow) - 10 (fast)
-        speech.volume = 1; // 0 (mute) - 1 (full)
+// Pause speech
+document.getElementById("pauseBtn").addEventListener("click", () => {
+    if (synth.speaking && !synth.paused) {
+        synth.pause();
+    }
+});
 
-        window.speechSynthesis.speak(speech);
-    });
+// Resume speech
+document.getElementById("resumeBtn").addEventListener("click", () => {
+    if (synth.paused) {
+        synth.resume();
+    }
+});
+
+// Stop speech
+document.getElementById("stopBtn").addEventListener("click", () => {
+    if (synth.speaking || synth.paused) {
+        synth.cancel();
+    }
 });
